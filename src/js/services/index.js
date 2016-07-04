@@ -7,4 +7,8 @@ let servicesModule = angular.module('app.services', []);
 import UserService from './user.service';
 servicesModule.service('User', UserService);
 
+// storing the users token
+import JwtService from './jwt.service';
+servicesModule.service('JWT', JwtService);
+
 export default servicesModule;

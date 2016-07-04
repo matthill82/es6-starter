@@ -1,29 +1,61 @@
 export default class User {
-	constructor(AppConstants, $http) {
+	constructor(JWT, AppConstants, $http, $state, $q) {
 		'ngInject';
 
+		this._JWT = JWT;
 		this._AppConstants = AppConstants;
 		this._$http = $http;
+		this._$state = $state;
+		this._$q = $q;
 
 		this.current = null;
 	}
 
-	 // Try to authenticate by registering or logging in
-	 attemptAuth(type, credentials) {
-			   let route = (type === 'login') ? '/login' : '';
-			   return this._$http({
-				     url: this._AppConstants.api + '/users' + route,
-				     method: 'POST',
-				     data: {
-				       user: credentials
-				     }
-			   }).then(
-	     // On success... function(res) {}
-	     (res) => {
-	       // Store the user's info for easy lookup
-	       this.current = res.data.user;
-	       return res;
-	     }
-	   );
-	 }
+	// Try to authenticate by registering or logging in
+	attemptAuth(type, credentials) {
+		let route = (type === 'login') ? '/login' : '';
+		return this._$http( {
+			url   : this._AppConstants.api + '/users' + route,
+			method: 'POST',
+			data  : {
+				user: credentials
+			}
+		} ).then(
+			// On success... function(res) {}
+			(res) => {
+
+				// Storing the users auth token in localstorage
+				this._JWT.save(res.data.user.token);
+
+				// Store the user's info for easy lookup
+				this.current = res.data.user;
+				return res;
+			}
+		);
+	}
+
+	logout() {
+		//set User.current to null
+		this.current = null;
+		//delete the JWT token in localStorage
+		this._JWT.destroy();
+		// Do a hard reload of current state to ensure all data is flushed
+		this._$state.go(this._$state.$current, null, { reload : true });
+	}
+
+
+	verifyAuth() {
+		let deferred = this._$q.defer();
+
+		// lets check fot the token first
+		if(!this._JWT.get()) {
+			deferred.resolve(false);
+			return deferred.promise;
+		}
+
+		// if there's a JWT token & user is already set up
+		if(this.current) {
+			
+		}
+	}
 }
