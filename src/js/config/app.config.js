@@ -1,19 +1,25 @@
+import authInterceptors from './auth.interceptor';
+
 function AppConfig($httpProvider, $stateProvider, $locationProvider, $urlRouterProvider) {
-  'ngInject';
+	'ngInject';
 
-  /*
-    If you don't want hashbang routing, uncomment this line.
-    Our tutorial will be using hashbang routing though :)
-  */
-  // $locationProvider.html5Mode(true);
+	// push our interceptor for auth
+	$httpProvider.interceptors.push( authInterceptors );
 
-  $stateProvider
-  .state('app', {
-    abstract: true,
-    templateUrl: 'layout/app-view.html'
-  });
+	$locationProvider.html5Mode( false );
 
-  $urlRouterProvider.otherwise('/');
+	$stateProvider
+		.state( 'app', {
+			abstract   : true,
+			templateUrl: 'layout/app-view.html',
+			resolve    : {
+				auth: (User) => {
+					return User.verifyAuth();
+				}
+			}
+		} );
+
+	$urlRouterProvider.otherwise( '/' );
 
 }
 

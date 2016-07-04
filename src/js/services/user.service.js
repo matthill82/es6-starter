@@ -55,7 +55,54 @@ export default class User {
 
 		// if there's a JWT token & user is already set up
 		if(this.current) {
-			
+			deferred.resolve(true);
+		} else {
+
+			this._$http({
+				url: this._AppConstants.api + '/user',
+				method : 'GET'
+			}).then(
+				(res) => {
+					this.current = res.data.user;
+					deferred.resolve(true);
+				},
+				// If an error hapens, that means the user's toke was invalid
+				(err) => {
+					this._JWT.destroy();
+					deferred.resolve(false);
+				}
+				// Reject automatically handled by auth interceptor
+				// Will boot them to the homepage
+			);
 		}
+
+		return deferred.promise;
+	}
+
+	ensureAuthIs(bool) {
+		let deferred = this._$q.defer();
+
+		this.verifyAuth().then(
+			(authValid) => {
+			if(authValid !== bool) {
+				this._$state.go('app.home');
+				deferred.resolve(false);
+			} else {
+				deferred.resolve(true)
+			}
+		});
+
+		return deferred.promise;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
