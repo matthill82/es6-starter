@@ -1,19 +1,15 @@
-/**
- * Created by matthewhill on 29/06/2016.
- */
-
 class AuthCtrl {
 	constructor(User, $state) {
 		'ngInject';
 
 		this._User = User;
 		this.title = $state.current.title;
-		this.authType = $state.current.name.replace('app.', '');
+		this.authType = $state.current.name.replace( 'app.', '' );
 	}
 
 	submitForm() {
 
-		this._User.attemptAuth(this.authType, this.formData).then(
+		this._User.attemptAuth( this.authType, this.formData ).then(
 			// success handler
 			(res) => {
 				this.isSubmitting = true;
@@ -21,15 +17,15 @@ class AuthCtrl {
 			},
 			(err) => {
 				this.isSubmitting = true;
-				console.log(err.data.errors);
+				this.errors = err.data.errors;
+				console.log( err.data.errors );
 			}
 		);
 
 		this.isSubmitting = true;
-		console.log(this.isSubmitting);
+		console.log( this.isSubmitting );
 	}
 
 }
-
 
 export default AuthCtrl;

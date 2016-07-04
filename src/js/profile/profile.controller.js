@@ -1,9 +1,8 @@
 class ProfileCtrl {
-  constructor() {
-    'ngInject';
+	constructor() {
+		'ngInject';
 
-  }
+	}
 }
-
 
 export default ProfileCtrl;
